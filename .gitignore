@@ -26,3 +26,7 @@ tests/out/
 
 # downloaded by tools/make_release.py (checked against its sha256 there)
 tools/busybox/busybox.exe
+
+# Qt's compiled caches of .js/.qml files: toonsim compiles the sources at start
+*.jsc
+*.qmlc
