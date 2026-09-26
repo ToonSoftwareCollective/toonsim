@@ -1,0 +1,2 @@
+module ThermostatUtils
+singleton ThermostatUtils 1.0 ThermostatUtils.qml

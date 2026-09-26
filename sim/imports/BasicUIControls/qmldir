@@ -1,0 +1,16 @@
+module BasicUIControls
+StyledRectangle 1.0 StyledRectangle.qml
+StyledButton 1.0 StyledButton.qml
+ControlGroup 1.0 ControlGroup.qml
+StyledValueLabel 1.0 StyledValueLabel.qml
+StyledToggle 1.0 StyledToggle.qml
+StyledRadioButton 1.0 StyledRadioButton.qml
+StyledCheckBox 1.0 StyledCheckBox.qml
+StyledLine 1.0 StyledLine.qml
+StyledProgressRing 1.0 StyledProgressRing.qml
+StyledCursorLabel 1.0 StyledCursorLabel.qml
+KeyboardGroup 1.0 KeyboardGroup.qml
+QrCode 1.0 QrCode.qml
+DateSelectorComponent 1.0 DateSelectorComponent.qml
+AreaGraphControl 1.0 AreaGraphControl.qml
+SortFilterProxyModel 1.0 SortFilterProxyModel.qml

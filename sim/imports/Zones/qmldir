@@ -1,0 +1,2 @@
+module Zones
+singleton Zones 1.0 Zones.qml

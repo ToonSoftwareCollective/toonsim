@@ -1,0 +1,11 @@
+{
+	"about": "Changes to the firmware's own QML that Qt 5.15 needs where the Toon's Qt 5.11 was more lenient. tools/build_compat.py applies them to the files in firmware/*.rcc and builds firmware/compat.rcc, which toonsim loads before the firmware, so the patched file takes the original's place at the same qrc: address. Each patch replaces an exact text; a patch whose text is no longer in the file (a new firmware) is reported and skipped.",
+	"patches": [
+		{
+			"file": "apps/internetSettings/WifiSettingDelegate.qml",
+			"find": "\tsignal clicked;\n",
+			"replace": "\t// signal clicked;  (toonsim: StyledRectangle already has clicked; Qt 5.15 rejects redeclaring it)\n",
+			"why": "Qt 5.15: 'Duplicate signal name: invalid override of property change signal or superclass signal'"
+		}
+	]
+}

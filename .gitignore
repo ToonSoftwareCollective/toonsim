@@ -1,0 +1,26 @@
+# The Toon's GUI is Eneco's: every user pulls it from their own rooted Toon (tools/pull_firmware)
+firmware/*
+!firmware/README.txt
+
+# your own Toon's settings and the simulator's runtime data
+data*/
+
+# apps are installed by the user (or pulled from the Toon), each is its own project
+apps/*
+!apps/PUT-YOUR-APPS-HERE.txt
+
+# build output and release packages (packages go to GitHub Releases, not into git)
+bin/
+dist/
+release/
+src/build/
+src/build-linux/
+*.o
+*.pyc
+__pycache__/
+
+# test output
+tests/out/
+
+# downloaded by tools/make_release.py (checked against its sha256 there)
+tools/busybox/busybox.exe

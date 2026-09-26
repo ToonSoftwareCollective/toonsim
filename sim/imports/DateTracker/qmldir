@@ -1,0 +1,2 @@
+module DateTracker
+singleton DateTracker 1.0 DateTracker.qml

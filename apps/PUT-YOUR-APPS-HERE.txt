@@ -1,0 +1,1 @@
+Each app in its own folder, as in /qmf/qml/apps on the Toon: apps/<app>/<App>App.qml - see docs/MANUAL.md.

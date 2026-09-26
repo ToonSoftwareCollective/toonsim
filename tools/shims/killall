@@ -1,0 +1,10 @@
+#!/bin/sh
+# toonsim stand-in for killall, for app scripts run by tools/tsc.py: "killall [-9] qt-gui" restarts the
+# simulator's GUI (as the Toon's watchdog restarts qt-gui); other processes are not touched.
+for a in "$@"; do
+	case "$a" in
+		qt-gui) "$TOONSIM_PY" "$TOONSIM_TSC" restart-gui --port "$TOONSIM_PORT"; exit 0 ;;
+	esac
+done
+echo "toonsim: killall $* ignored" >&2
+exit 0

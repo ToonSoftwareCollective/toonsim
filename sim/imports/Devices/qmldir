@@ -1,0 +1,2 @@
+module Devices
+singleton Devices 1.0 Devices.qml

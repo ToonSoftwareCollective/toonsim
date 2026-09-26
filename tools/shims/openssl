@@ -1,0 +1,4 @@
+#!/bin/sh
+# toonsim stand-in for openssl, for app scripts run by tools/tsc.py (Windows has no openssl.exe): the
+# hashes, base64 and random bytes scripts use it for (dgst, base64, rand), done by tools/tsc.py.
+exec "$TOONSIM_PY" "$TOONSIM_TSC" openssl "$@"

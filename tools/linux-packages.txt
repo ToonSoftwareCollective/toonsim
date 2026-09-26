@@ -1,0 +1,24 @@
+# The Debian / Ubuntu packages the Linux toonsim runs with: the system's Qt 5.15 and its QML modules,
+# Python 3 and ssh. toonsim.sh installs the missing ones at its first start (apt, after asking).
+qml-module-qtquick2
+qml-module-qtquick-window2
+qml-module-qtquick-controls
+qml-module-qtquick-controls2
+qml-module-qtquick-templates2
+qml-module-qtquick-layouts
+qml-module-qtgraphicaleffects
+qml-module-qtquick-xmllistmodel
+qml-module-qtquick-localstorage
+qml-module-qtquick-particles2
+qml-module-qtquick-shapes
+qml-module-qtqml-models2
+qml-module-qt-labs-folderlistmodel
+qml-module-qt-labs-settings
+qml-module-qtwebsockets
+qml-module-qtquick-dialogs
+qtvirtualkeyboard-plugin
+qml-module-qtquick-virtualkeyboard
+libqt5svg5
+qtbase5-dev-tools
+python3
+openssh-client

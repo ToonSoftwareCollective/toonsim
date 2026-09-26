@@ -1,0 +1,7 @@
+#!/bin/sh
+# toonsim stand-in for reboot / shutdown / poweroff / halt, for app scripts run by tools/tsc.py: the
+# Toon restarting becomes the simulator's GUI restarting. Never the PC's own: Windows has a shutdown.exe
+# that takes "-r", so without this stand-in a script's "shutdown -r now" would restart the computer.
+echo "toonsim: $(basename "$0") $* - restarting the simulator's GUI instead" >&2
+"$TOONSIM_PY" "$TOONSIM_TSC" restart-gui --port "$TOONSIM_PORT"
+exit 0

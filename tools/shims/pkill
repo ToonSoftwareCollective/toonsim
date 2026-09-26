@@ -1,0 +1,5 @@
+#!/bin/sh
+# toonsim stand-in for pkill, for app scripts run by tools/tsc.py: the processes a Toon script means are
+# not on the PC, and a name could match a real Windows program, so nothing is killed.
+echo "toonsim: pkill $* ignored" >&2
+exit 0

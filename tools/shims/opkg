@@ -1,0 +1,5 @@
+#!/bin/sh
+# toonsim stand-in for opkg (the Toon's package manager), for app scripts run by tools/tsc.py:
+# nothing is installed as a package in the simulator, so it lists nothing and installs nothing.
+echo "toonsim: opkg $* ignored" >&2
+exit 0

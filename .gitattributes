@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# cmd.exe needs CRLF in batch files; shell scripts (the shims have no extension) must stay LF
+*.bat text eol=crlf
+*.sh  text eol=lf
+tools/shims/* text eol=lf
+
+*.png binary
+*.jpg binary
+*.exe binary

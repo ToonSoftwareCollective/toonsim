@@ -1,0 +1,3 @@
+module Weather
+singleton Weather 1.0 Weather.qml
+WeatherCitySelectionModel 1.0 WeatherCitySelectionModel.qml

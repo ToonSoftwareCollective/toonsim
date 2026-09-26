@@ -1,0 +1,10 @@
+module BxtClient
+singleton BxtClient 1.0 BxtClient.qml
+singleton BxtFactory 1.0 BxtFactory.qml
+BxtMessage 1.0 BxtMessage.qml
+BxtDiscoveryHandler 1.0 BxtDiscoveryHandler.qml
+BxtDatasetHandler 1.0 BxtDatasetHandler.qml
+BxtResponseHandler 1.0 BxtResponseHandler.qml
+BxtNotifyHandler 1.0 BxtNotifyHandler.qml
+BxtActionHandler 1.0 BxtActionHandler.qml
+BxtRequestCallback 1.0 BxtRequestCallback.qml

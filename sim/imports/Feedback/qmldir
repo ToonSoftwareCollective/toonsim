@@ -1,0 +1,4 @@
+module Feedback
+singleton FeedbackManager 1.0 FeedbackManager.qml
+FeedbackController 1.0 FeedbackController.qml
+FeedbackCampaign 1.0 FeedbackCampaign.qml

@@ -1,0 +1,19 @@
+#!/bin/sh
+# toonsim stand-in for the Toon's /HCBv2/bin/bxt, for app scripts run by tools/tsc.py. What scripts use
+# it for - a notification (bxt -d :happ_usermsg -s Notification -n CreateNotification -a type -v T
+# -a subType -v S -a text -v X) - becomes a notification in the simulator's GUI; the rest is ignored.
+TYPE=""; SUB=""; TEXT=""; ACTION=""; KEY=""
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-n) ACTION="$2"; shift ;;
+		-a) KEY="$2"; shift ;;
+		-v) case "$KEY" in type) TYPE="$2" ;; subType) SUB="$2" ;; text) TEXT="$2" ;; esac; shift ;;
+	esac
+	shift
+done
+if [ "$ACTION" = "CreateNotification" ] && [ -n "$TEXT" ]; then
+	"$TOONSIM_PY" "$TOONSIM_TSC" notify --port "$TOONSIM_PORT" "${TYPE:-tsc}" "${SUB:-notify}" "$TEXT"
+else
+	echo "toonsim: bxt $ACTION ignored (only CreateNotification is simulated)" >&2
+fi
+exit 0
