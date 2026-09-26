@@ -9,7 +9,7 @@ or compiler on the user's PC:
     bin/        toonsim.exe, the Qt 5.15.2 (MinGW) DLLs, plugins and QML modules it uses, qt.conf
     python/     the embeddable Python from python.org, for tsc.py, netbridge.py and the tools
     tools/busybox/  busybox-w32 (frippery.org), the shell for the apps' own scripts
-    sim/ tools/ tests/ docs/ README.md VERSION toonsim.bat
+    sim/ tools/ tests/ docs/ README.md LICENSE VERSION toonsim.bat
     apps/       empty: the user's apps go here
     firmware/   empty: tools/pull_firmware.bat copies the Toon's GUI into it (it is Eneco's, not ours
                 to hand out)
@@ -101,7 +101,7 @@ def main_linux():
                     src = os.path.join(root, f)
                     add(tf, src, os.path.relpath(src, HOME).replace(os.sep, "/"))
                     count += 1
-        for f in ("README.md", "VERSION", "toonsim.sh"):
+        for f in ("README.md", "LICENSE", "VERSION", "toonsim.sh"):
             add(tf, os.path.join(HOME, f), f)
         for rel, text in (("apps/PUT-YOUR-APPS-HERE.txt",
                            "Each app in its own folder, as in /qmf/qml/apps on the Toon: apps/<app>/<App>App.qml - see docs/MANUAL.md.\n"),
@@ -191,7 +191,7 @@ def main():
     for d in ("sim", "tools", "tests", "docs", "src"):
         if os.path.isdir(os.path.join(HOME, d)):
             copy_tree_filtered(os.path.join(HOME, d), os.path.join(out, d), lambda rel: rel.split(os.sep)[0] in ("out", "build"))
-    for f in ("README.md", "VERSION", "toonsim.bat"):
+    for f in ("README.md", "LICENSE", "VERSION", "toonsim.bat"):
         shutil.copy2(os.path.join(HOME, f), out)
     os.makedirs(os.path.join(out, "apps"))
     with open(os.path.join(out, "apps", "PUT-YOUR-APPS-HERE.txt"), "w") as f:

@@ -304,3 +304,15 @@ Needs Qt 5.15.2 (MinGW) and its MinGW compiler, installed under `%USERPROFILE%\Q
 Warnings that are the firmware's own (the device prints them too) and are left alone: the keyboard
 style "toon", ThermostatApp's wastecollection settings (the TSC mod expects that app),
 ThermostatWeekProgramTab `root is not defined`, EditDayScreen's anchor, ProductFrame's `width of null`.
+
+## Licence
+
+toonsim is released under the [MIT licence](LICENSE). That covers toonsim's own code. It does not
+cover:
+
+- **The Toon firmware** (the GUI in `firmware\`): it is Eneco's. It is not part of this repository or
+  the release packages; everyone copies it from their own rooted Toon.
+- **ToonStore** (`apps\toonstore`) and the **TSC helper script** (`sim\tsc`): they come from the
+  [ToonSoftwareCollective](https://github.com/ToonSoftwareCollective) and fall under their terms.
+- **Third-party parts of the Windows package:** Qt 5.15 (LGPL), the embeddable Python (PSF licence)
+  and busybox-w32 (GPLv2; version, licence and source in `tools\busybox\README.txt`).
