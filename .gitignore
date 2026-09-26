@@ -5,9 +5,11 @@ firmware/*
 # your own Toon's settings and the simulator's runtime data
 data*/
 
-# apps are installed by the user (or pulled from the Toon), each is its own project
+# apps are installed by the user (or pulled from the Toon), each is its own project;
+# the ToonStore (ToonSoftwareCollective) is included so the simulator can install the others
 apps/*
 !apps/PUT-YOUR-APPS-HERE.txt
+!apps/toonstore/
 
 # build output and release packages (packages go to GitHub Releases, not into git)
 bin/

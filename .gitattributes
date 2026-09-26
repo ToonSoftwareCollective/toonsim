@@ -9,3 +9,5 @@ tools/shims/* text eol=lf
 *.png binary
 *.jpg binary
 *.exe binary
+*.qm  binary
+*.jsc binary
