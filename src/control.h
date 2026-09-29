@@ -8,6 +8,7 @@
 //   log                                             console lines since the previous "log"
 //   size                                            window size and isNxt
 //   restart                                         restart the GUI (a new toonsim, same arguments)
+// (Ctrl+1 / Ctrl+2 and, on Windows, the window menu restart it as a Toon 1 / Toon 2: restartAs.)
 //   quit
 // tools/toonsim.py wraps this for Python tests.
 
@@ -34,6 +35,8 @@ public:
 	// the GUI restart the Toon does after "killall -9 qt-gui" (its watchdog starts qt-gui again): a new
 	// toonsim with the same arguments, this one quits. Also QML's toonsimControl.restart().
 	Q_INVOKABLE void restart();
+	// the same with another screen: "toon1" or "toon2" replaces the --size argument
+	Q_INVOKABLE void restartAs(const QString &size);
 
 private:
 	QByteArray handle(const QString &line);

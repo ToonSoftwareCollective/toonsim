@@ -24,6 +24,11 @@ started with `./toonsim.sh`; paths below with `/` instead of `\`. What differs i
     toonsim.bat --size toon1        Toon 1 (800x480, isNxt false)
     toonsim.bat --data D:\toon2b    a second simulator, with its own settings
 
+To switch a running simulator between the Toon 1 and Toon 2 screen, use **Ctrl+1** / **Ctrl+2**,
+or on Windows the window menu (the icon at the top left of the window, or Alt+Space), which shows
+the current one with a check mark. It is a restart with the other `--size`, keeping the other
+arguments and the settings in `data\`, just like the GUI restart after a ToonStore install.
+
 Without firmware (the first start) toonsim.bat runs `tools\pull_firmware.py --setup`: it asks for the
 Toon's address, login and password, copies the firmware and optionally the apps and their settings,
 then starts the simulator.
@@ -291,8 +296,8 @@ Needs Qt 5.15.2 (MinGW) and its MinGW compiler, installed under `%USERPROFILE%\Q
 
 ## Not done yet
 
-- Wished for: buttons above the screen to switch Toon 1 / Toon 2 (a restart with the other `--size`),
-  and setting the simulated time, to test time-based behaviour.
+- Wished for: setting the simulated time, to test time-based behaviour. (Switching Toon 1 / Toon 2
+  while running is done: Ctrl+1 / Ctrl+2 and the window menu, see the start of this file.)
 - Month targets (MonthDataDataset): only solar has them; the graphs' "Ingeschat verbruik" for
   electricity and gas has no values yet, and a changed expected solar yield counts after a restart.
 - District heating, water: the model has them at zero or rough values. The meter settings' solar
