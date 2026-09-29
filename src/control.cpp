@@ -103,14 +103,23 @@ void Control::listen(int port)
 	});
 }
 
-void Control::restart()
+void Control::restart() { restartAs(QString()); }
+
+void Control::restartAs(const QString &size)
 {
 	if (m_restarting) return;
 	m_restarting = true;
-	QTimer::singleShot(200, qApp, [this]() {
-		qInfo("toonsim: restarting the GUI");
+	QTimer::singleShot(200, qApp, [this, size]() {
+		qInfo("toonsim: restarting the GUI%s", size.isEmpty() ? "" : qPrintable(" as " + size));
 		if (m_server) m_server->close();
 		QStringList args = QCoreApplication::arguments().mid(1);
+		if (!size.isEmpty()) {
+			for (int i = args.size() - 1; i >= 0; --i) {
+				if (args[i] == "--size" || args[i] == "-size") { args.removeAt(i); if (i < args.size()) args.removeAt(i); }
+				else if (args[i].startsWith("--size=")) args.removeAt(i);
+			}
+			args << "--size" << size;
+		}
 		if (!args.contains("--restarted")) args << "--restarted";
 		QProcess::startDetached(QCoreApplication::applicationFilePath(), args);
 		qApp->quit();

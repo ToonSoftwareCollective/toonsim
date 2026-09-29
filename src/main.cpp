@@ -33,6 +33,8 @@
 #include <QSslSocket>
 #include <QLockFile>
 #include <QQuickItem>
+#include <QKeyEvent>
+#include <QAbstractNativeEventFilter>
 #include <algorithm>
 
 #ifdef Q_OS_WIN
@@ -240,6 +242,60 @@ private:
 	QObject *m_ctl;
 	bool m_swallow = false;
 };
+
+// Switching between the Toon 1 and the Toon 2 screen: a restart with the other --size (the Toon's QML
+// takes isNxt and the scaling once, at start). Ctrl+1 / Ctrl+2 on every platform; on Windows also in
+// the window menu (the icon at the top left, or Alt+Space) - see SizeMenu. The Toon's own screen is
+// left alone: Canvas.qml lays out on the window's height, so a bar above it would shift things.
+class SizeKeys : public QObject
+{
+public:
+	SizeKeys(Control *control, bool nxt, QObject *parent) : QObject(parent), m_control(control), m_nxt(nxt) {}
+protected:
+	bool eventFilter(QObject *obj, QEvent *ev) override
+	{
+		if (ev->type() != QEvent::KeyPress || !qobject_cast<QQuickWindow *>(obj)) return false;
+		QKeyEvent *k = static_cast<QKeyEvent *>(ev);
+		if (!(k->modifiers() & Qt::ControlModifier) || (k->key() != Qt::Key_1 && k->key() != Qt::Key_2)) return false;
+		const bool want = k->key() == Qt::Key_2;
+		if (want != m_nxt && !k->isAutoRepeat()) m_control->restartAs(want ? "toon2" : "toon1");
+		return true;
+	}
+private:
+	Control *m_control;
+	bool m_nxt;
+};
+
+#ifdef Q_OS_WIN
+// the window menu's two extra items (system menu command ids: below 0xF000, low 4 bits zero)
+enum { IDM_TOON1 = 0x1010, IDM_TOON2 = 0x1020 };
+
+class SizeMenu : public QAbstractNativeEventFilter
+{
+public:
+	SizeMenu(QQuickWindow *w, Control *control, bool nxt) : m_control(control), m_nxt(nxt)
+	{
+		HMENU menu = GetSystemMenu(reinterpret_cast<HWND>(w->winId()), FALSE);
+		if (!menu) return;
+		AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+		AppendMenuW(menu, MF_STRING | (nxt ? MF_UNCHECKED : MF_CHECKED), IDM_TOON1, L"Toon 1 (800x480)\tCtrl+1");
+		AppendMenuW(menu, MF_STRING | (nxt ? MF_CHECKED : MF_UNCHECKED), IDM_TOON2, L"Toon 2 (1024x600)\tCtrl+2");
+	}
+	bool nativeEventFilter(const QByteArray &type, void *message, long *) override
+	{
+		if (type != "windows_generic_MSG") return false;
+		const MSG *msg = static_cast<const MSG *>(message);
+		if (msg->message != WM_SYSCOMMAND) return false;
+		const WPARAM id = msg->wParam & 0xFFF0;
+		if (id != IDM_TOON1 && id != IDM_TOON2) return false;
+		if ((id == IDM_TOON2) != m_nxt) m_control->restartAs(id == IDM_TOON2 ? "toon2" : "toon1");
+		return true;
+	}
+private:
+	Control *m_control;
+	bool m_nxt;
+};
+#endif
 }
 
 int main(int argc, char *argv[])
@@ -383,6 +439,10 @@ int main(int argc, char *argv[])
 			w->setOpacity(0.0);
 		}
 		w->show();
+		app.installEventFilter(new SizeKeys(&control, nxt, &app));
+#ifdef Q_OS_WIN
+		if (!cli.isSet(hiddenOpt)) app.installNativeEventFilter(new SizeMenu(w, &control, nxt));
+#endif
 	}
 	return app.exec();
 }
