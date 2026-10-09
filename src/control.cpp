@@ -21,7 +21,9 @@
 #include <QTimer>
 #include <QThread>
 #include <QProcess>
+#include <QDir>
 #include <cstdio>
+#include "pathmap.h"
 
 namespace {
 QMutex g_logLock;
@@ -126,6 +128,18 @@ void Control::restartAs(const QString &size)
 	});
 }
 
+void Control::checkUpdates(bool manual)
+{
+	Q_UNUSED(manual);
+	const QString cmdPath = PathMap::instance().dataDir() + "/tmp/tsc.command";
+	QDir().mkpath(QFileInfo(cmdPath).absolutePath());
+	QFile f(cmdPath);
+	if (f.open(QIODevice::WriteOnly | QIODevice::Append)) {
+		f.write("tscupdate\n");
+		f.close();
+	}
+}
+
 void Control::mouse(int type, int x, int y)
 {
 	const QPointF p(x, y);
@@ -165,6 +179,10 @@ QByteArray Control::handle(const QString &line)
 	}
 	if (cmd == "quit") {
 		QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
+		return ok();
+	}
+	if (cmd == "update" || cmd == "check_update") {
+		checkUpdates(true);
 		return ok();
 	}
 	// the GUI restart the Toon does with "killall -9 qt-gui" (tsc after a ToonStore install): a new

@@ -11,6 +11,13 @@
 # apps and their settings) from your Toon.
 HOME_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+if [ "$1" = "--check-update" ]; then
+	exec python3 "$HOME_DIR/tools/updater.py" --check
+fi
+if [ "$1" = "--update" ]; then
+	exec python3 "$HOME_DIR/tools/updater.py" --update
+fi
+
 if command -v dpkg-query >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
 	MISSING=""
 	for p in $(grep -v '^#' "$HOME_DIR/tools/linux-packages.txt"); do

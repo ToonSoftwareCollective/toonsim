@@ -27,7 +27,8 @@ restorerootpassword) change nothing here; most send the notification the device 
 Log: data/var/log/tsc (the Toon's /var/log/tsc) and the simulator's log, prefixed "tsc:".
 ("data" is the simulator's --data folder, data/ by default.)
 """
-import argparse, datetime, glob, json, os, shutil, socket, sys, tarfile, time, urllib.request
+import argparse, datetime, glob, json, os, shutil, socket, sys, tarfile, threading, time, urllib.request
+import updater
 
 VERSION = "2.61-toonsim"
 ROUNDWAIT = 5
@@ -472,12 +473,99 @@ def check_mobile_web():
 
 
 BETA = False
+LATEST_UPDATE_INFO = None
 
 
-def tsc_update():
-    # the device checks for a new tsc script, resource files and firmware; nothing to update here
-    log("Skipped: no TSC, resource file or firmware updates in the simulator")
-    notify("notify", "Er is geen TSC update gevonden")
+def tsc_update(manual=True):
+    global LATEST_UPDATE_INFO
+    log("Checking for Toonsim updates from %s..." % updater.REPO)
+    try:
+        info = updater.check_for_update(repo=updater.REPO, home=A.home)
+    except Exception as e:
+        log("Check for updates failed: %s" % e)
+        if manual: notify("notify", "Fout bij controleren op updates")
+        return
+
+    LATEST_UPDATE_INFO = info
+    cur = info.get("current_version", "")
+    new = info.get("latest_version", "")
+
+    if info.get("update_available"):
+        log("Toonsim update available: v%s (current: v%s)" % (new, cur))
+        notify("update", "Toonsim update v%s beschikbaar" % new)
+        if info.get("is_git"):
+            try:
+                control("eval updater.showGitNotice()")
+            except Exception as e:
+                log("Could not show git notice dialog: %s" % e)
+        else:
+            notes = (info.get("release_notes", "") or "").replace("\r", "").replace("\n", " ")[:150]
+            url = info.get("asset_url", "")
+            try:
+                control("eval updater.showPrompt(%s, %s, %s, %s)" % (
+                    json.dumps(cur), json.dumps(new), json.dumps(notes), json.dumps(url)))
+            except Exception as e:
+                log("Could not show update dialog: %s" % e)
+    else:
+        log("Toonsim is up-to-date (v%s)" % cur)
+        if manual:
+            notify("notify", "Toonsim is up-to-date (v%s)" % cur)
+            try:
+                control("eval updater.showUpToDate(%s)" % json.dumps(cur))
+            except Exception as e:
+                log("Could not show up-to-date dialog: %s" % e)
+
+
+def handle_toonsim_update():
+    global LATEST_UPDATE_INFO
+    if not LATEST_UPDATE_INFO or not LATEST_UPDATE_INFO.get("asset_url"):
+        info = updater.check_for_update(repo=updater.REPO, home=A.home)
+        LATEST_UPDATE_INFO = info
+        if not info.get("update_available") or not info.get("asset_url"):
+            log("No update asset available to download")
+            return
+
+    info = LATEST_UPDATE_INFO
+    asset_url = info["asset_url"]
+    asset_name = info["asset_name"]
+    dest = os.path.join(A.data, "tmp", "update", asset_name)
+
+    log("Downloading update %s from %s..." % (asset_name, asset_url))
+    try:
+        control("eval updater.setProgress(0, 'Update downloaden...')")
+    except Exception: pass
+
+    last_reported = [-1]
+
+    def on_progress(pct, cur, tot):
+        if pct != last_reported[0] and (pct % 5 == 0 or pct == 100):
+            last_reported[0] = pct
+            try:
+                cur_mb = cur / (1024 * 1024)
+                tot_mb = tot / (1024 * 1024)
+                msg = "Update downloaden (%.1f/%.1f MB)..." % (cur_mb, tot_mb)
+                control("eval updater.setProgress(%d, %s)" % (pct, json.dumps(msg)))
+            except Exception: pass
+
+    try:
+        updater.download_file(asset_url, dest, progress_callback=on_progress)
+        log("Download complete (%s), starting updater process..." % dest)
+        try:
+            control("eval updater.setProgress(100, 'Download voltooid! De simulator herstart...')")
+        except Exception: pass
+        time.sleep(1.0)
+
+        launcher = os.path.join(A.home, "toonsim.bat" if os.name == "nt" else "toonsim.sh")
+        parent_pid = A.parent if A.parent else 0
+        updater.start_apply_update(dest, home=A.home, wait_pid=parent_pid, launcher=launcher)
+        log("Update process launched. Quitting toonsim...")
+        time.sleep(0.5)
+        control("quit")
+    except Exception as e:
+        log("Update failed: %s" % e)
+        try:
+            control("eval updater.setProgress(0, %s)" % json.dumps("Update mislukt: %s" % e))
+        except Exception: pass
 
 
 def flush_firewall():
@@ -500,7 +588,8 @@ def toggle_beta():
 COMMANDS = {
     "toonstore": lambda: toonstore(),
     "deletefile": lambda: delete_file(),
-    "tscupdate": tsc_update,
+    "tscupdate": lambda: tsc_update(manual=True),
+    "toonsimupdate": handle_toonsim_update,
     "flushfirewall": flush_firewall,
     "restorerootpassword": restore_root_password,
     "togglebeta": toggle_beta,
@@ -625,6 +714,16 @@ def main():
     os.makedirs(dev("/mnt/data/tsc/appData"), exist_ok=True)
     os.makedirs(dev("/tmp"), exist_ok=True)
     log("Starting TSC support script (version %s), apps in %s" % (VERSION, A.apps))
+
+    def check_updates_background():
+        time.sleep(10)
+        try:
+            tsc_update(manual=False)
+        except Exception as e:
+            log("Background update check failed: %s" % e)
+
+    threading.Thread(target=check_updates_background, daemon=True).start()
+
     try:
         ensure_toonstore()
     except Exception as e:
