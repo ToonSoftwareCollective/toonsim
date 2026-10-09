@@ -235,4 +235,66 @@ QtObject {
 		function reset() {}
 		function getResetPrefix() { return ""; }
 	}
+
+	// Toonsim updater integration
+	property QtObject updater: QtObject {
+		id: simUpdater
+		property string currentVersion: ""
+		property string latestVersion: ""
+		property string releaseNotes: ""
+		property string assetUrl: ""
+		property int downloadProgress: 0
+		property string statusText: ""
+
+		function showPrompt(curVer, newVer, notes, url) {
+			currentVersion = curVer;
+			latestVersion = newVer;
+			releaseNotes = notes;
+			assetUrl = url;
+			var msg = "Er is een nieuwe versie van Toonsim beschikbaar: v" + newVer + " (huidige: v" + curVer + ").\n\nWil je deze update nu downloaden en installeren?";
+			qdialogImpl.showDialog(1 /* SizeMedium */, "Toonsim Update", msg, "Nu bijwerken", function () {
+				startDownload();
+				return true;
+			}, "Later", function () {
+				return false;
+			});
+		}
+
+		function showUpToDate(curVer) {
+			qdialogImpl.showDialog(0 /* SizeSmall */, "Toonsim Update", "Toonsim is up-to-date (versie v" + curVer + ").", "OK", function () {
+				return false;
+			});
+		}
+
+		function showGitNotice() {
+			qdialogImpl.showDialog(1 /* SizeMedium */, "Toonsim Update", "Toonsim draait vanuit een git repository.\n\nVoer 'git pull' uit in de repository om de nieuwste wijzigingen op te halen.", "OK", function () {
+				return false;
+			});
+		}
+
+		function setProgress(pct, text) {
+			downloadProgress = pct;
+			statusText = text;
+			if (qdialogImpl.context && qdialogImpl.context.visible) {
+				qdialogImpl.context.content = (text || "Update downloaden...") + "\n\nVoortgang: " + pct + "%";
+				qdialogImpl.context.button1.enabled = false;
+				qdialogImpl.context.button2.enabled = false;
+			}
+		}
+
+		function startDownload() {
+			if (qdialogImpl.context) {
+				qdialogImpl.context.content = "Update downloaden...\nEven geduld a.u.b.";
+				qdialogImpl.context.button1.enabled = false;
+				qdialogImpl.context.button2.enabled = false;
+			}
+			try {
+				var xhr = new XMLHttpRequest();
+				xhr.open("PUT", "file:///tmp/tsc.command");
+				xhr.send("toonsimupdate");
+			} catch (e) {
+				console.log("toonsim updater: could not send toonsimupdate command:", e);
+			}
+		}
+	}
 }

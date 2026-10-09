@@ -10,6 +10,14 @@ rem The first start copies the Toon's GUI (and optionally its apps and their set
 setlocal
 set PY=%~dp0python\python.exe
 if not exist "%PY%" set PY=python
+if "%~1"=="--check-update" (
+	"%PY%" "%~dp0tools\updater.py" --check
+	exit /b %ERRORLEVEL%
+)
+if "%~1"=="--update" (
+	"%PY%" "%~dp0tools\updater.py" --update
+	exit /b %ERRORLEVEL%
+)
 if not exist "%~dp0firmware\resources-static-base.rcc" (
 	"%PY%" "%~dp0tools\pull_firmware.py" --setup
 	if errorlevel 1 (

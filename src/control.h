@@ -37,6 +37,8 @@ public:
 	Q_INVOKABLE void restart();
 	// the same with another screen: "toon1" or "toon2" replaces the --size argument
 	Q_INVOKABLE void restartAs(const QString &size);
+	// check for toonsim updates
+	Q_INVOKABLE void checkUpdates(bool manual = true);
 
 private:
 	QByteArray handle(const QString &line);

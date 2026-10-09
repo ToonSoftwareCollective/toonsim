@@ -29,6 +29,11 @@ or on Windows the window menu (the icon at the top left of the window, or Alt+Sp
 the current one with a check mark. It is a restart with the other `--size`, keeping the other
 arguments and the settings in `data\`, just like the GUI restart after a ToonStore install.
 
+To check for updates from GitHub (https://github.com/ToonSoftwareCollective/toonsim), use **Ctrl+U**,
+select **Controleer op updates...** in the window menu, press **Check for updates** in the TSC Settings app,
+or run `toonsim.bat --check-update` (`./toonsim.sh --check-update`). If an update is available, the simulator
+offers to download and apply it automatically.
+
 Without firmware (the first start) toonsim.bat runs `tools\pull_firmware.py --setup`: it asks for the
 Toon's address, login and password, copies the firmware and optionally the apps and their settings,
 then starts the simulator.

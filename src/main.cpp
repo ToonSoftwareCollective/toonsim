@@ -256,7 +256,12 @@ protected:
 	{
 		if (ev->type() != QEvent::KeyPress || !qobject_cast<QQuickWindow *>(obj)) return false;
 		QKeyEvent *k = static_cast<QKeyEvent *>(ev);
-		if (!(k->modifiers() & Qt::ControlModifier) || (k->key() != Qt::Key_1 && k->key() != Qt::Key_2)) return false;
+		if (!(k->modifiers() & Qt::ControlModifier)) return false;
+		if (k->key() == Qt::Key_U && !k->isAutoRepeat()) {
+			m_control->checkUpdates(true);
+			return true;
+		}
+		if (k->key() != Qt::Key_1 && k->key() != Qt::Key_2) return false;
 		const bool want = k->key() == Qt::Key_2;
 		if (want != m_nxt && !k->isAutoRepeat()) m_control->restartAs(want ? "toon2" : "toon1");
 		return true;
@@ -267,8 +272,8 @@ private:
 };
 
 #ifdef Q_OS_WIN
-// the window menu's two extra items (system menu command ids: below 0xF000, low 4 bits zero)
-enum { IDM_TOON1 = 0x1010, IDM_TOON2 = 0x1020 };
+// the window menu's extra items (system menu command ids: below 0xF000, low 4 bits zero)
+enum { IDM_TOON1 = 0x1010, IDM_TOON2 = 0x1020, IDM_UPDATE = 0x1030 };
 
 class SizeMenu : public QAbstractNativeEventFilter
 {
@@ -280,6 +285,8 @@ public:
 		AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 		AppendMenuW(menu, MF_STRING | (nxt ? MF_UNCHECKED : MF_CHECKED), IDM_TOON1, L"Toon 1 (800x480)\tCtrl+1");
 		AppendMenuW(menu, MF_STRING | (nxt ? MF_CHECKED : MF_UNCHECKED), IDM_TOON2, L"Toon 2 (1024x600)\tCtrl+2");
+		AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+		AppendMenuW(menu, MF_STRING, IDM_UPDATE, L"Controleer op updates...\tCtrl+U");
 	}
 	bool nativeEventFilter(const QByteArray &type, void *message, long *) override
 	{
@@ -287,6 +294,10 @@ public:
 		const MSG *msg = static_cast<const MSG *>(message);
 		if (msg->message != WM_SYSCOMMAND) return false;
 		const WPARAM id = msg->wParam & 0xFFF0;
+		if (id == IDM_UPDATE) {
+			m_control->checkUpdates(true);
+			return true;
+		}
 		if (id != IDM_TOON1 && id != IDM_TOON2) return false;
 		if ((id == IDM_TOON2) != m_nxt) m_control->restartAs(id == IDM_TOON2 ? "toon2" : "toon1");
 		return true;
