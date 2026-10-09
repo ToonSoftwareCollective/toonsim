@@ -430,6 +430,15 @@ int main(int argc, char *argv[])
 		w->setTitle(nxt ? "Toon 2 (1024x600)" : "Toon 1 (800x480)");
 		w->resize(nxt ? QSize(1024, 600) : QSize(800, 480));
 		control.setWindow(w);
+
+		QQmlComponent splashComp(&engine, QUrl::fromLocalFile(home + "/sim/splash/SplashScreen.qml"));
+		if (QQuickItem *splash = qobject_cast<QQuickItem *>(splashComp.create(engine.rootContext()))) {
+			splash->setParentItem(w->contentItem());
+			splash->setWidth(w->width());
+			splash->setHeight(w->height());
+		} else if (!splashComp.errorString().isEmpty()) {
+			qWarning().noquote() << "toonsim: splash screen:" << splashComp.errorString();
+		}
 		// hidden: shown fully transparent, ignoring the mouse and without a taskbar entry. A window that is
 		// not shown, or shown off-screen, is never rendered and grabWindow() (the "shot" command) comes back
 		// empty; the control port's taps go to the scene directly, so they still work.
