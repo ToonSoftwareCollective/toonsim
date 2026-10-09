@@ -44,9 +44,19 @@ QtObject {
 			var m = s.match(/^[a-zA-Z][\w+.-]*:(\/\/[^\/]*)?(\/.*)$/);
 			return m ? m[2] : s;
 		}
+		signal psplashProgressChanged(int progress)
+		signal psplashQuitRequested()
+		property int splashProgress: 0
+
 		function clearFocus() {}
-		function psplashProgress(p) {}
-		function psplashQuit() { console.log("toonsim: splash screen removed, GUI is up"); }
+		function psplashProgress(p) {
+			splashProgress = p;
+			psplashProgressChanged(p);
+		}
+		function psplashQuit() {
+			console.log("toonsim: splash screen removed, GUI is up");
+			psplashQuitRequested();
+		}
 		function reboot() { console.log("toonsim: the GUI asked for a reboot (ignored)"); }
 		function getTenant() { return "eneco"; }
 		function screenDpiY() { return isNxt ? 158 : 125; }
